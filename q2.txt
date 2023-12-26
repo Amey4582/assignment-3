@@ -1,0 +1,125 @@
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+
+class Product {
+public:
+    int productId;
+    string productName;
+    double price;
+
+
+    Product(int id, const string& name, double p) : productId(id), productName(name), price(p) {}
+
+
+    void displayProduct() const {
+        cout << "Product ID: " << productId << ", Name: " << productName << ", Price: $" << price << endl;
+    }
+};
+
+
+class ShoppingCart {
+private:
+    static const int MAX_PRODUCTS = 10; 
+    Product* products[MAX_PRODUCTS];   
+    int numProducts;                   
+
+public:
+ 
+    ShoppingCart() : numProducts(0) {}
+
+  
+    ~ShoppingCart() {
+        for (int i = 0; i < numProducts; ++i) {
+            delete products[i];
+        }
+    }
+
+  
+    void addProduct(Product* product) {
+        if (numProducts < MAX_PRODUCTS) {
+            products[numProducts++] = product;
+        }
+        else {
+            cout << "Cannot add more products to the cart. Maximum limit reached." << endl;
+        }
+    }
+
+   
+    void displayCart() const {
+        cout << "Shopping Cart Contents:" << endl;
+        for (int i = 0; i < numProducts; ++i) {
+            products[i]->displayProduct();
+        }
+    }
+
+  
+    double calculateTotalCost() const {
+        double totalCost = 0.0;
+        for (int i = 0; i < numProducts; ++i) {
+            totalCost += products[i]->price;
+        }
+        return totalCost;
+    }
+};
+
+
+class User {
+public:
+    int userId;
+    ShoppingCart* cart;
+
+   
+    User(int id) : userId(id), cart(nullptr) {}
+
+    
+    ~User() {
+        delete cart;
+    }
+
+   
+    void displayUser() const {
+        cout << "The User ID Is : " << userId << endl;
+        if (cart) {
+            cart->displayCart();
+            cout << "The Total Cost Is: $" << cart->calculateTotalCost() << endl;
+        }
+        else {
+            cout << "User has no shopping cart." << endl;
+        }
+    }
+};
+
+int main() {
+    
+    Product* bat = new Product(1, "bat", 999.99);
+    Product* ball = new Product(2, "ball", 499.99);
+    Product* wicket = new Product(3, "wicket", 79.99);
+
+   
+    User user1(101);
+    User user2(102);
+
+   
+    user1.cart = new ShoppingCart();
+    user1.cart->addProduct(bat);
+    user1.cart->addProduct(ball);
+
+    user2.cart = new ShoppingCart();
+    user2.cart->addProduct(ball);
+    user2.cart->addProduct(wicket);
+
+   
+    user1.displayUser();
+    cout << "---------------------" << endl;
+    user2.displayUser();
+
+   
+    delete bat;
+    delete ball;
+    delete wicket;
+
+    return 0;
+}
